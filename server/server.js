@@ -16,7 +16,7 @@ const port = process.env.PORT || 3000
 dbURI()
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.json())
-app.use(express.static({path: './public'}))
+app.use(express.static('../public'))
 
 const connectedUsers = {}
 io.on("connection", function(socket){
