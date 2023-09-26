@@ -50,7 +50,7 @@
                     success: function(response){
                         alert("User registered successfully!")
 
-                        window.location.href = '/display.html'
+                        window.location.href = '/api/user/display'
                     },
                     error: function(error){
                         alert("Error registering user:"+ error.responseJSON.message)
