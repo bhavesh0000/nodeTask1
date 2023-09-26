@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Users</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Add some CSS for the tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>Live Users</h1>
+    <ul id="liveUsersList"></ul>
+
+    <script>
+        const socket = io('http://localhost:3008/live_users')
+
+        socket.on('userList', (users)=>{
+            const userListDiv = document.getElementById('userList')
+
+            userListDiv.innerHTML = ''
+            users.forEach((user)=>{
+                const listItem = document.createElement('div')
+                listItem.innerHTML = `<span class="user-details" data-socketid="${user.socketId}">${user.email}</span>`
+
+                listItem.querySelector('.user-details').addEventListener('click',()=>{
+                    const socketId = user.socketId
+                    socket.emit('getUserDetails', socketId)
+                })
+                userListDiv.appendChild(listItem)
+            })
+        })
+        socket.on('userDetails', (userDetails) =>{
+            alert(`User Email: ${userDetails.email}, Socket Id: ${userDetails.socketId}`)
+        })
+    </script>
+    
+</body>
+</html>
+ 

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-
 const dbURI = ()=>{
     mongoose.connect(process.env.DB_URI,{
         useNewUrlPArser: true,
@@ -13,3 +12,4 @@ const dbURI = ()=>{
     })
 }
 module.exports = dbURI
+

@@ -3,37 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Data Display</title>
+    <title>User List</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <h1>User Data</h1>
-    <ul id="userDataList"></ul>
+    <h1>User List</h1>
+    <ul id="userList"></ul>
+
+    <!-- User Details Popup -->
+    <div id="userDetailsPopup" style="display: none;">
+    <h2>User Details</h2>
+    <div id="userDetails"></div>
+    <button id="closePopup">Close</button>
+</div>
 
     <script>
         $(document).ready(function(){
-            $.ajax({
-                type: "GET",
-                url: "/api/user/list",
-                success: function(users){
-                    const userList = $("#userDataList")
-                    users.forEach(function(user){
-                        const listItem = $("<li>")
-                            listItem.text(`
-                            Name: ${user.FirstName} ${user.LastName},
-                             Email: ${user.email},
-                             Mobile No: ${user.mobileNo},
-                             Address: ${user.address.street}, ${user.address.city}, ${user.address.state}, ${user.address.country},
-                             Login ID: ${user.loginId},
-                             Password: ${user.password}
-                             `)
-                            userList.append(listItem)
-                    })
-                },
-                error: function(error){
-                    console.error("Error fetching user data:"+ error.responseJSON.error)
-                }
+            // to fetch user data and populate the list
+            function fetchUserList(){
+                $.ajax({
+                    type: "GET",
+                    url: "/api/user/list",
+                    success: function(users){
+                        const userList = $("#userList")
+                        userList.empty()
+                        users.forEach(function(user){
+                            userList.append(`<li><a class="userLink" data-socketid="${user.socketId}" data-email="${user.email}">${user.email} (Socket ID: ${user.socketId})</a></li>`)
+                        })
+                    },
+                    error: function(error){
+                        alert("Error fetching user list:" + error.responseJSON.error)
+                    }
+                })
+            }
+
+            fetchUserList()
+
+            $(document).on("click", ".userLink", function(){
+                const email = $(this).data("email")
+                const socketId = socket.id
+                $.ajax({
+                    type: "GET",
+                    url: `/api/user/details?email=${email}&socketId=${socketId}`,
+                    success: function(userDetails){
+                        const userDetailsPopup = $("#userDetailsPopup")
+                        const userDetailsDiv = $("#userDetails")
+                        userDetailsDiv.empty()
+                        userDetailsDiv.append(`<p><strong>Email:</strong> ${userDetails.email}</p>`)
+                        userDetailsDiv.append(`<p><strong>First Name:</strong> ${userDetails.FirstName}</p>`)
+                        userDetailsDiv.append(`<p><strong>Last Name:</strong> ${userDetails.LastName}</p>`)
+                        userDetailsDiv.append(`<p><strong>Mobile No:</strong> ${userDetails.mobileNo}</p>`)
+                        userDetailsDiv.append(`<p><strong>Address:</strong> ${userDetails.address.street}, ${userDetails.address.city}, ${userDetails.address.state}, ${userDetails.address.country}</p>`);
+                        userDetailsDiv.append(`<p><strong>Login ID:</strong> ${userDetails.loginId}</p>`)
+                        userDetailsPopup.show()
+                    },
+                    error: function(error){
+                        alert("Error fetching user details: " + error.responseJSON.error)
+                    }
+                })
             })
+
+            $("#closePopup").click(function(){
+                $("#userDetailsPopup").hide()
+                })
+
+                var socket = io('http://localhost:3008')
+                socket.on("connect", function(){
+                    console.log("Socket connected")
+                })
+                socket.on("userJoined", function(data){
+                    fetchUserList()
+                })
         })
     </script>
     

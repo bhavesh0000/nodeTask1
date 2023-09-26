@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
-
 const userSchema = new mongoose.Schema({
     FirstName:{
-        type: String,
+        type: String,   
         required: true
     },
     LastName:{
@@ -17,7 +16,8 @@ const userSchema = new mongoose.Schema({
                 return /^\d{10}$/.test(value)
             },
             message:'Mobile number must be 10 digits long.'
-        }
+        },
+        unique: true
     },
     email:{
         type: String,
@@ -52,10 +52,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         validate: {
             validator: function (value){
-                return /^[a-zA-Z0-9]{8}$/.test(value)
+                return /^[a-zA-Z0-9]{8,18}$/.exec(value) !== null
             },
-            message: 'Login ID must be 8 characters long and alphanumeric.'
-        }
+            message: 'Login ID must be  8-18 characters long and alphanumeric.'
+        },
+        unique: true
     },
     password:{
         type: String,
