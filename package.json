@@ -5,7 +5,8 @@
   "main": "server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
   },
   "author": "Bhavesh Gupta",
   "license": "ISC",
@@ -16,5 +17,8 @@
     "mongoose": "^7.5.2",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
