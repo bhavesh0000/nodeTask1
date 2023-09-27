@@ -27,7 +27,8 @@ const userSchema = new mongoose.Schema({
                 return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(value)
             },
             message: 'Invalid email format.'
-        }
+        },
+        unique: true
     },
     address: {
         street: {

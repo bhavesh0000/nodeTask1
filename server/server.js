@@ -22,6 +22,8 @@ app.use(express.static(path.join(__dirname, '../public')))
 const connectedUsers = {}
 io.on("connection", function(socket){
     console.log("a user connected:" + socket.id)
+    // send socket id to the client
+    socket.emit("socketId", socket.id)
      socket.on("userConnected", function(user){
         // Add the user to the connectedUsers object
         connectedUsers[socket.id] = user;
@@ -31,6 +33,8 @@ io.on("connection", function(socket){
 
     // Handle disconnection
     socket.on("disconnect", function(){
+        console.log("user disconnected:" + socket.id)
+        
         // Remove the user from the connectedUsers object
         delete connectedUsers[socket.id];
         io.to("live users").emit("userListUpdated", Object.values(connectedUsers));

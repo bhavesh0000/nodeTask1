@@ -8,6 +8,7 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
+    <div id="socketId"></div>
     <h1>User List</h1>
     <ul id="userList"></ul>
 
@@ -20,8 +21,18 @@
 
     <script>
         $(document).ready(function(){
-            // to fetch user data and populate the list
-            function fetchUserList(){
+               var socket = io('http://localhost:3008')
+               socket.on("socketId", function(socketId){
+                console.log("Socket connected. Socket ID: " + socketId)
+
+        $("#socketId").text("Socket Id:" + socketId)
+
+        fetchUserList()
+    })
+    socket.on("userJoined", function(data){
+        fetchUserList()
+    })
+     function fetchUserList(){
                 $.ajax({
                     type: "GET",
                     url: "/api/user/list",
@@ -29,7 +40,9 @@
                         const userList = $("#userList")
                         userList.empty()
                         users.forEach(function(user){
-                            userList.append(`<li><a class="userLink" data-socketid="${user.socketId}" data-email="${user.email}">${user.email} (Socket ID: ${user.socketId})</a></li>`)
+                            // Update the data-socketid attribute
+                const listItem = `<li><a class="userLink"  data-email="${user.email}">${user.email}</a></li>`
+                            userList.append(listItem)
                         })
                     },
                     error: function(error){
@@ -37,15 +50,13 @@
                     }
                 })
             }
-
             fetchUserList()
-
             $(document).on("click", ".userLink", function(){
                 const email = $(this).data("email")
-                const socketId = socket.id
+                
                 $.ajax({
                     type: "GET",
-                    url: `/api/user/details?email=${email}&socketId=${socketId}`,
+                    url: `/api/user/details?email=${email}`,
                     success: function(userDetails){
                         const userDetailsPopup = $("#userDetailsPopup")
                         const userDetailsDiv = $("#userDetails")
@@ -56,6 +67,7 @@
                         userDetailsDiv.append(`<p><strong>Mobile No:</strong> ${userDetails.mobileNo}</p>`)
                         userDetailsDiv.append(`<p><strong>Address:</strong> ${userDetails.address.street}, ${userDetails.address.city}, ${userDetails.address.state}, ${userDetails.address.country}</p>`);
                         userDetailsDiv.append(`<p><strong>Login ID:</strong> ${userDetails.loginId}</p>`)
+                        userDetailsDiv.append(`<p><strong>Password:</strong>${userDetails.password}</p>`)
                         userDetailsPopup.show()
                     },
                     error: function(error){
@@ -66,14 +78,6 @@
 
             $("#closePopup").click(function(){
                 $("#userDetailsPopup").hide()
-                })
-
-                var socket = io('http://localhost:3008')
-                socket.on("connect", function(){
-                    console.log("Socket connected")
-                })
-                socket.on("userJoined", function(data){
-                    fetchUserList()
                 })
         })
     </script>
