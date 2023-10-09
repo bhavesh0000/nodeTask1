@@ -6,6 +6,32 @@
     <title>User List</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .userLink {
+            cursor: pointer;
+            color: #512a6e;
+            text-decoration: underline;
+            
+}
+#userDetailsPopup {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: beige;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+#closePopup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+    </style>
 </head>
 <body>
     <div id="socketId"></div>
@@ -13,10 +39,10 @@
     <ul id="userList"></ul>
 
     <!-- User Details Popup -->
-    <div id="userDetailsPopup" style="display: none;">
+    <div id="userDetailsPopup" >
     <h2>User Details</h2>
     <div id="userDetails"></div>
-    <button id="closePopup">Close</button>
+    <button id="closePopup" >Close</button>
 </div>
 
     <script>
@@ -76,7 +102,7 @@
                 })
             })
 
-            $("#closePopup").click(function(){
+            $("#closePopup").click(function (){
                 $("#userDetailsPopup").hide()
                 })
         })
